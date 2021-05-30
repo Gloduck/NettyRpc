@@ -3,12 +3,10 @@ package cn.gloduck.netty.rpc.transport.client;
 import cn.gloduck.netty.rpc.codec.RpcRequest;
 import cn.gloduck.netty.rpc.codec.RpcResponse;
 
-import cn.gloduck.netty.rpc.transport.sync.ResponseFuture;
 import io.netty.channel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.AbstractMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,10 +41,10 @@ public class RpcResponseHandler extends SimpleChannelInboundHandler<RpcResponse>
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcResponse msg) throws Exception {
         String requestId = msg.getRequestId();
-        logger.info("Receive message for request : {}",requestId);
+        logger.info("收到服务ID为：{} 的响应",requestId);
         ResponseFuture responseFuture = removeRequest(requestId);
         if(responseFuture == null){
-            logger.warn("Receive unknown request : {}",requestId);
+            logger.warn("收到未知的服务ID : {}",requestId);
         } else {
             responseFuture.receiveResponse(msg);
         }
@@ -63,7 +61,7 @@ public class RpcResponseHandler extends SimpleChannelInboundHandler<RpcResponse>
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.error("Client cause exception : {}", cause.getMessage());
+        logger.error("客户端发生异常 : {}", cause.getMessage());
     }
 
     /**

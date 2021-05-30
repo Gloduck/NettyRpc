@@ -23,4 +23,14 @@ public class TestService {
         user.setPassword(password);
         return user;
     }
+
+    @RpcService(serviceName = "async")
+    public String async(){
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "Hello";
+    }
 }

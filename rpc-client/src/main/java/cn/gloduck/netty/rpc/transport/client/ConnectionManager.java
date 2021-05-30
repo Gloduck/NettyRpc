@@ -55,7 +55,7 @@ public class ConnectionManager {
             host = split[0];
             port = Integer.parseInt(split[1]);
         } catch (Exception e) {
-            logger.warn("Parse address {} error, Maybe wrong format", address);
+            logger.warn("创建链接失败，可能是因为地址格式不正确，{}", address);
         }
         if (host == null || port == 0) {
             return false;
@@ -80,14 +80,12 @@ public class ConnectionManager {
             return transporter;
         }
         boolean create = false;
-        if(transporter == null){
-            synchronized (this){
-                transporter = transporterMapping.get(address);
-                if(transporter == null){
-                    create = createTransporter(address);
-                } else {
-                    create = true;
-                }
+        synchronized (this){
+            transporter = transporterMapping.get(address);
+            if(transporter == null){
+                create = createTransporter(address);
+            } else {
+                create = true;
             }
         }
         return create ? transporterMapping.get(address) : null;
@@ -97,7 +95,7 @@ public class ConnectionManager {
     public void removeTransporter(String address) {
         Transporter transporter = this.transporterMapping.remove(address);
         transporter.destroy();
-        logger.info("Remove connection on {}", address);
+        logger.info("移除链接： {}", address);
     }
 
 
@@ -123,7 +121,8 @@ public class ConnectionManager {
      */
     public void setTransporterCreator(TransporterCreator transporterCreator) {
         if (this.transporterCreator != null) {
-            logger.warn("TransporterCreator should only be set once");
+            logger.warn("TransporterCreator应该只被设置一次");
+            return;
         }
         this.transporterCreator = transporterCreator;
     }
@@ -134,7 +133,8 @@ public class ConnectionManager {
      */
     public void setRegistry(Registry registry) {
         if(this.registry != null){
-            logger.warn("Registry should only be set once");
+            logger.warn("Registry应该只被设置一次");
+            return;
         }
         this.registry = registry;
     }

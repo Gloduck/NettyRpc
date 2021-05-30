@@ -39,7 +39,7 @@ public class RpcServerInitializer extends ChannelInitializer<SocketChannel> {
         ChannelPipeline pipeline = ch.pipeline();
         serializer = config.getNewSerializer();
         if(serializer == null){
-            logger.warn("Can't create serializer instance , so we use default serializer");
+            logger.warn("创建序列化器失败，使用默认的JDK序列化器");
             serializer = new JdKSerializer();
         }
         executor = config.getThreadPool();

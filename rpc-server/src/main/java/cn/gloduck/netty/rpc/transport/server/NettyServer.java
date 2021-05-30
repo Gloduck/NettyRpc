@@ -48,7 +48,7 @@ public  class NettyServer extends AbstractNettyServer implements BeanMethodRegis
     @Override
     public void registryServiceBean(String serviceName, Object bean, Method method){
         if(bean == null || method == null){
-            logger.warn("Bean or Method is null , registry service : {} failed", serviceName);
+            logger.warn("Bean 或 Method为null , 注册RPC服务 {} 映射失败", serviceName);
             return;
         }
         this.serviceBeanMapping.put(serviceName, new BeanAndMethod(bean, method));
@@ -81,9 +81,9 @@ public  class NettyServer extends AbstractNettyServer implements BeanMethodRegis
             ChannelFuture future = bootstrap.bind(nettyConfig.getHost(), nettyConfig.getPort());
             ChannelFuture channelFuture = future.addListener(bindingFuture -> {
                 if (bindingFuture.isSuccess()) {
-                    logger.info("Server started on port {}", nettyConfig.getPort());
+                    logger.info("RPC服务成功启动在端口{}", nettyConfig.getPort());
                 } else {
-                    logger.error("Server start failed");
+                    logger.error("RPC服务启动失败");
                     stop();
                 }
             });

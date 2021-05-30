@@ -6,8 +6,22 @@ import cn.gloduck.netty.rpc.enums.MessageType;
  * RPC返回值
  */
 public class RpcResponse implements RpcMessage {
-    private static final Integer SUCCESS_CODE = 0;
-    private static final Integer FAILED_CODE = 1;
+    /**
+     * 执行成功
+     */
+    public static final int SUCCESS = 0;
+    /**
+     * 客户端异常
+     */
+    public static final int CLIENT_FAILED = 1;
+    /**
+     * 发送消息出现异常
+     */
+    public static final int SEND_FAILED = 2;
+    /**
+     * 服务器异常
+     */
+    public static final int SERVER_FAILED = 3;
     private RpcResponse(){}
 
     public RpcResponse(String requestId, Integer code, String message, Object data) {
@@ -34,12 +48,34 @@ public class RpcResponse implements RpcMessage {
      */
     private Object data;
 
+    /**
+     * 发送成功
+     * @param requestId
+     * @param data
+     * @return
+     */
     public static RpcResponse success(String requestId, Object data){
-        return new RpcResponse(requestId, SUCCESS_CODE, null, data);
+        return new RpcResponse(requestId, SUCCESS, null, data);
     }
 
-    public static RpcResponse failed(String requestId, String message){
-        return new RpcResponse(requestId, FAILED_CODE, message, null);
+    /**
+     * 发送失败
+     * @param requestId
+     * @param message
+     * @return
+     */
+    public static RpcResponse sendFailed(String requestId, String message){
+        return new RpcResponse(requestId, SEND_FAILED, message, null);
+    }
+
+    /**
+     * 服务端错误
+     * @param requestId
+     * @param message
+     * @return
+     */
+    public static RpcResponse serverFailed(String requestId, String message){
+        return new RpcResponse(requestId, SERVER_FAILED, message, null);
     }
 
     /**
@@ -47,7 +83,7 @@ public class RpcResponse implements RpcMessage {
      * @return
      */
     public boolean success(){
-        return this.code.equals(SUCCESS_CODE);
+        return this.code.equals(SUCCESS);
     }
 
     @Override

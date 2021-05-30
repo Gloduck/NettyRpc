@@ -7,7 +7,7 @@ import cn.gloduck.netty.rpc.loadbance.LoadBlance;
 import cn.gloduck.netty.rpc.transport.client.Transporter;
 import cn.gloduck.netty.rpc.transport.client.ConnectionManager;
 import cn.gloduck.netty.rpc.ref.client.Instance;
-import cn.gloduck.netty.rpc.transport.sync.ResponseFuture;
+import cn.gloduck.netty.rpc.transport.client.ResponseFuture;
 import cn.gloduck.netty.rpc.utils.CollectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +44,7 @@ public class RpcProxy implements InvocationHandler {
         RpcReference annotation = method.getAnnotation(RpcReference.class);
         if(annotation == null){
             // 注：此处待完善
-            String msg = "Method should use RpcReference to support rpc";
+            String msg = "RPC方法需要使用RpcReference注解";
             logger.warn(msg);
             throw new AbstractMethodError(msg);
         }
@@ -61,7 +61,7 @@ public class RpcProxy implements InvocationHandler {
         // 从注册中心获取实例
         List<Instance> instances = ConnectionManager.instance().getInstanceForServiceName(serviceName);
         if(CollectionUtil.isEmptyCollection(instances)){
-            throw new RpcInvokeException("No instance for service " + serviceName, serviceName);
+            throw new RpcInvokeException(String.format("从注册中心获取服务 %s 的实例失败",serviceName));
         }
         // 负载均衡选择调用的示例
         Instance instance = loadBlance.chooseHandler(instances);
@@ -81,7 +81,7 @@ public class RpcProxy implements InvocationHandler {
         }
         if(transporter == null){
             // 如果始终获取不到有效实例，则异常退出。
-            throw new RpcInvokeException("Cant get available server to invoke method : {}",method.getName());
+            throw new RpcInvokeException("Cant get available server to invoke method :" + method.getName());
         }
         final String asyncReturn = ResponseFuture.class.getTypeName();
         Type returnType = method.getReturnType();

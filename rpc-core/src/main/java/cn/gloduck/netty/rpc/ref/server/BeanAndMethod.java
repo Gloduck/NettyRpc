@@ -25,10 +25,10 @@ public class BeanAndMethod {
 
     public Object invokeMethod(Object[] parameters,Class<?>[] requireParameterTypes){
         Class<?>[] parameterTypes = method.getParameterTypes();
-        logger.info("Try to execute method from request , the requestParameter are {}, and require parameterTypes are {}, the local parameterTypes are {}",Arrays.toString(parameters), Arrays.toString(requireParameterTypes), Arrays.toString(parameterTypes));
+        logger.info("尝试执行请求的方法 , 请求的参数为： {}, 请求的类型为： {}, 方法的实际类型为： {}",Arrays.toString(parameters), Arrays.toString(requireParameterTypes), Arrays.toString(parameterTypes));
         if(!Arrays.equals(requireParameterTypes, parameterTypes)){
             // 对参数类型进行验证，确保就是要执行的方法。
-            String msg = String.format("Require parameter types : %s mismatch method parameter types : %s", Arrays.toString(requireParameterTypes), Arrays.toString(parameterTypes));
+            String msg = String.format("请求的方法类型 : %s 和实际的方法类型不匹配 : %s", Arrays.toString(requireParameterTypes), Arrays.toString(parameterTypes));
             throw new RpcInvokeException(msg);
         }
         Object result;

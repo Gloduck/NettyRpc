@@ -10,6 +10,7 @@ import cn.gloduck.netty.rpc.service.TestService;
 import cn.gloduck.netty.rpc.transport.NettyConfig;
 import cn.gloduck.netty.rpc.transport.client.ConnectionManager;
 import cn.gloduck.netty.rpc.transport.client.NettyClient;
+import cn.gloduck.netty.rpc.transport.client.ResponseFuture;
 import cn.gloduck.netty.rpc.utils.NetUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -18,6 +19,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.concurrent.ExecutionException;
 
 @SpringBootApplication
 public class ClientTestApplication {
@@ -41,6 +44,19 @@ public class ClientTestApplication {
             int update = testService.updateUser(new User(1,"gloduck","gloduck"));
             return Integer.toString(update);
         }
+
+        @GetMapping("async")
+        public String asyncTest(){
+            String msg = "before_";
+            ResponseFuture<String> async = testService.async();
+            try {
+                String value = async.get();
+                msg += value;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return msg;
+        }
     }
 
     @Bean
@@ -60,7 +76,7 @@ public class ClientTestApplication {
     public NettyClient nettyClient(){
         NettyConfig config = NettyConfig.clientBuilder()
                 .port(8027)
-                .serializer(FastJsonSerializer.class)
+//                .serializer(FastJsonSerializer.class)
                 .requestTimeout(5000)
                 .build();
         NettyClient nettyClient = new NettyClient(config);

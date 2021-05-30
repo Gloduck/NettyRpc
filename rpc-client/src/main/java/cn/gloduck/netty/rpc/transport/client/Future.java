@@ -12,6 +12,7 @@ public interface Future<T> {
     T get(long timeout, TimeUnit unit) throws InterruptedException, RpcInvokeException, TimeoutException;
     boolean isDone();
 
-    boolean cancel();
+    boolean cancel(boolean removeRequest);
+
 
 }

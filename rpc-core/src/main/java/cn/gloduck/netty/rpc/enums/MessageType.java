@@ -1,5 +1,6 @@
 package cn.gloduck.netty.rpc.enums;
 
+import cn.gloduck.netty.rpc.codec.RpcBeat;
 import cn.gloduck.netty.rpc.codec.RpcMessage;
 import cn.gloduck.netty.rpc.codec.RpcRequest;
 import cn.gloduck.netty.rpc.codec.RpcResponse;
@@ -45,10 +46,10 @@ public enum MessageType {
         public byte getTypeCode() {
             return 0;
         }
-/*        @Override
+        @Override
         public Class<? extends RpcMessage> getBindingClassType() {
-            return RpcResponse.class;
-        }*/
+            return RpcBeat.class;
+        }
     };
 
     /**

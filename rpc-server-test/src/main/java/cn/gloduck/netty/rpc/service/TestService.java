@@ -15,7 +15,7 @@ public class TestService {
         System.out.println(user.toString());
         return 1;
     }
-    @RpcService(serviceName = "getUser")
+    @RpcService(serviceName = "getUser",weight = 5)
     public User getUser(Integer id, String name, String password){
         User user = new User();
         user.setId(id);

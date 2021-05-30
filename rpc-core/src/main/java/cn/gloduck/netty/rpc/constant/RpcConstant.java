@@ -10,6 +10,6 @@ public class RpcConstant {
     /**
      * 心跳时间
      */
-    public static final long BEAT_ALL_IDLE_TIME = 2 * 30;
+    public static final long BEAT_ALL_IDLE_TIME = 2 ;
 
 }

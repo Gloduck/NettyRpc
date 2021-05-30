@@ -35,7 +35,9 @@ public class ServerTestApplication {
     public NettyServer nettyServer(){
         NettyConfig config = NettyConfig.serverBuilder()
                 .address(NetUtil.getLocalHost(), 8026)
-//                .serializer(FastJsonSerializer.class)
+                .serializer(FastJsonSerializer.class)
+                .heartBeatTimes(3)
+                .heartBeatInterval(5)
                 .build();
         NettyServer nettyServer = new NettyServer(config);
         return nettyServer;

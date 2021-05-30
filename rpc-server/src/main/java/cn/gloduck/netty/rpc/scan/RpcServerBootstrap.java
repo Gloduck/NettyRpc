@@ -26,8 +26,8 @@ import java.lang.reflect.Method;
 @Component
 public class RpcServerBootstrap implements ApplicationListener<WebServerInitializedEvent>, ApplicationContextAware, DisposableBean {
     private static final Logger logger = LoggerFactory.getLogger(RpcServerBootstrap.class);
-    private Registry registry;
-    private NettyServer nettyServer;
+    private final Registry registry;
+    private final NettyServer nettyServer;
     private ApplicationContext context;
 
     public RpcServerBootstrap(Registry registry, NettyServer nettyServer) {

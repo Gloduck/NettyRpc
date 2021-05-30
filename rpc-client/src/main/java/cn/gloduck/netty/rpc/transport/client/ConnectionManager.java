@@ -95,7 +95,6 @@ public class ConnectionManager {
     public void removeTransporter(String address) {
         Transporter transporter = this.transporterMapping.remove(address);
         transporter.destroy();
-        logger.info("移除链接： {}", address);
     }
 
 

@@ -44,9 +44,10 @@ public class RpcServerInitializer extends ChannelInitializer<SocketChannel> {
         }
         executor = config.getThreadPool();
         pipeline.addLast(new LengthFieldBasedFrameDecoder(RpcConstant.MAX_FRAME_LENGTH, RpcConstant.MAGIC_NUMBER.length + 2, 4))
-                .addLast(new IdleStateHandler(RpcConstant.BEAT_READER_IDLE_TIME, RpcConstant.BEAT_WRITER_IDLE_TIME, RpcConstant.BEAT_ALL_IDLE_TIME, TimeUnit.SECONDS))
+                .addLast(new IdleStateHandler(RpcConstant.BEAT_READER_IDLE_TIME, RpcConstant.BEAT_WRITER_IDLE_TIME, config.getHeartBeatInterval(), TimeUnit.SECONDS))
                 .addLast(new RpcDecoder(serializer))
                 .addLast(new RpcEncoder(serializer))
+                .addLast(new RpcServerHeartBeatHandler(config.getHeartBeatTimes()))
                 .addLast(new RpcServerHandler(serviceBeanMapping, executor));
 
     }

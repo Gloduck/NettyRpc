@@ -15,8 +15,7 @@ import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 /**
  * @author Gloduck
  */
-public class ResponseFuture<T> implements Future<T> {
-    private final static Logger logger = LoggerFactory.getLogger(ResponseFuture.class);
+public final class ResponseFuture<T> implements Future<T> {
     private final String requestId;
     private final String serviceName;
     private RpcResponse response;
@@ -80,8 +79,11 @@ public class ResponseFuture<T> implements Future<T> {
     }
 
     @Override
-    public boolean cancel() {
+    public boolean cancel(boolean removeRequest) {
         boolean release = sync.release(1);
+        if(removeRequest){
+            this.handler.removeRequest(requestId);
+        }
         return release;
     }
 /*

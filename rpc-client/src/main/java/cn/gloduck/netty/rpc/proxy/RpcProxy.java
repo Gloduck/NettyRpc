@@ -63,7 +63,7 @@ public class RpcProxy implements InvocationHandler {
         if(CollectionUtil.isEmptyCollection(instances)){
             throw new RpcInvokeException(String.format("从注册中心获取服务 %s 的实例失败",serviceName));
         }
-        // 负载均衡选择调用的示例
+        // 负载均衡选择调用的实例，优先使用用户提供的负载均衡算法
         Instance instance = loadBlance.chooseHandler(instances);
         String address = instance.getAddress();
         // 根据实例的地址获取Transporter
@@ -81,12 +81,11 @@ public class RpcProxy implements InvocationHandler {
         }
         if(transporter == null){
             // 如果始终获取不到有效实例，则异常退出。
-            throw new RpcInvokeException("Cant get available server to invoke method :" + method.getName());
+            throw new RpcInvokeException("无法创建连接来执行RPC服务 :" + method.getName());
         }
         final String asyncReturn = ResponseFuture.class.getTypeName();
         Type returnType = method.getReturnType();
         int timeout = annotation.timeout();
-
         Object returnValue = null;
         if(asyncReturn.equals(returnType.getTypeName())){
             // 异步执行

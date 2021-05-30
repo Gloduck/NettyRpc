@@ -5,7 +5,7 @@ import cn.gloduck.netty.rpc.enums.MessageType;
 import java.util.Arrays;
 
 
-public class RpcRequest implements RpcMessage {
+public final class RpcRequest implements RpcMessage {
     /**
      * 请求号
      */

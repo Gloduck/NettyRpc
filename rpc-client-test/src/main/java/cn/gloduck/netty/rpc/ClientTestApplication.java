@@ -67,7 +67,6 @@ public class ClientTestApplication {
                 .ephemeral(true)
                 .address("127.0.0.1:2181").build();
         Registry registry = new ZookeeperRegistry(config);
-
         return registry;
     }
 
@@ -76,7 +75,7 @@ public class ClientTestApplication {
     public NettyClient nettyClient(){
         NettyConfig config = NettyConfig.clientBuilder()
                 .port(8027)
-//                .serializer(FastJsonSerializer.class)
+                .serializer(FastJsonSerializer.class)
                 .requestTimeout(5000)
                 .build();
         NettyClient nettyClient = new NettyClient(config);

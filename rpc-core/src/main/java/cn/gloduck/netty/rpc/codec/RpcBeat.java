@@ -7,7 +7,11 @@ import cn.gloduck.netty.rpc.enums.MessageType;
  * @author Gloduck
  */
 public final class RpcBeat implements RpcMessage {
-
+    private RpcBeat(){}
+    private static final RpcBeat instance = new RpcBeat();
+    public static RpcBeat instance(){
+        return instance;
+    }
     @Override
     public MessageType getMessageType() {
         return MessageType.RPC_BEAT;

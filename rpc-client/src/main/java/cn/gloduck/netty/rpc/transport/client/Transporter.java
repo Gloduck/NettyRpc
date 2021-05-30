@@ -52,12 +52,21 @@ public class Transporter {
     public Object syncSend(RpcRequest request, int timeout){
         checkConnection();
         Object data = null;
+        ResponseFuture future = null;
         try {
-            ResponseFuture future = doSend(request);
+            future = doSend(request);
             data = future.get(timeout, TimeUnit.MILLISECONDS);
         } catch (RpcInvokeException e){
+            if(future != null){
+                // 如果服务执行失败，则取消请求
+                future.cancel(true);
+            }
             throw e;
         } catch (Exception e){
+            if(future != null){
+                // 如果服务执行失败，则取消请求
+                future.cancel(true);
+            }
             throw new RpcException(e.getMessage(), e.getCause());
         }
         return data;
@@ -87,8 +96,6 @@ public class Transporter {
                 if(cause != null){
                     // 发送请求出现错误
                     logger.error("发送RPC请求时候出现错误", cause);
-                    // 移除请求
-                    responseHandler.removeRequest(request.getRequestId());
                     throw new RpcSendException(cause.getMessage(), cause.getCause());
                 }
             }

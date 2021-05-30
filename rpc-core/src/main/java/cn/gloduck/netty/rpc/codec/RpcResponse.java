@@ -5,7 +5,7 @@ import cn.gloduck.netty.rpc.enums.MessageType;
 /**
  * RPC返回值
  */
-public class RpcResponse implements RpcMessage {
+public final class RpcResponse implements RpcMessage {
     /**
      * 执行成功
      */

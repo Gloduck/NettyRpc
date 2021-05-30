@@ -11,7 +11,7 @@ public class ServiceInfo {
      */
     private String serviceName;
     /**
-     * 服务对应的权重，默认为CPU核心数，如果小于0代表服务不可用
+     * 服务对应的权重，默认为CPU核心数
      */
     private int weight;
 

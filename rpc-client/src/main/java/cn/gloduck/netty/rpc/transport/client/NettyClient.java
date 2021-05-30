@@ -3,8 +3,10 @@ package cn.gloduck.netty.rpc.transport.client;
 import cn.gloduck.netty.rpc.transport.AbstractNettyServer;
 import cn.gloduck.netty.rpc.transport.NettyConfig;
 import cn.gloduck.netty.rpc.transport.functional.TransporterCreator;
+import cn.gloduck.netty.rpc.utils.NetUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -44,8 +46,11 @@ public class NettyClient extends AbstractNettyServer implements TransporterCreat
      */
     @Override
     public Transporter createTransporter(String host, int port) {
-        RpcClientInitializer initializer = new RpcClientInitializer(nettyConfig);
+        String remoteAddress = NetUtil.toUrlString(host, port);
+        RpcClientInitializer initializer = new RpcClientInitializer(remoteAddress,nettyConfig);
         Bootstrap bootstrap = new Bootstrap();
+        // 设置连接超时时间
+        bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, nettyConfig.getConnectTimeout());
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .handler(initializer);

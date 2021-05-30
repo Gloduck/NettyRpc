@@ -21,16 +21,47 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class NettyConfig {
     private static final Logger logger = LoggerFactory.getLogger(NettyConfig.class);
+    /**
+     * Netty默认worker线程。客户端和服务端参数
+     */
     private static final int DEFAULT_WORKER_THREAD = 4;
+    /**
+     * 默认心跳数。服务端参数
+     */
+    private static final int DEFAULT_HEART_BEAT_TIMES = 10;
+
+    /**
+     * 默认接收心跳间隔。服务端参数
+     */
+    private static final int DEFAULT_HEART_BEAT_INTERVAL = 60;
+
+    /**
+     * 默认发送心跳的间隔。客户端参数
+     */
+    private static final int DEFAULT_HEART_BEAT_SEND_INTERVAL = 60;
+
+    /**
+     * 默认请求超时事件，客户端参数
+     */
+    private static final int DEFAULT_REQUEST_TIMEOUT = 500;
+
+    /**
+     * 默认连接服务器超时事件，客户端参数
+     */
+    private static final int DEFAULT_CONNECT_TIMEOUT = 500;
     private NettyConfig() {
     }
 
-    String host;
-    int port;
-    int workerThread;
-    int requestTimeout;
+    private String host;
+    private int port;
+    private int workerThread;
+    private int requestTimeout;
     private SerializerFactory<RpcSerializer> serializerFactory;
-    ThreadPoolExecutor threadPool;
+    private ThreadPoolExecutor threadPool;
+    private int heartBeatTimes;
+    private int heartBeatInterval;
+    private int connectTimeout;
+
 
     public static ClientConfigBuilder clientBuilder() {
         return new ClientConfigBuilder();
@@ -156,12 +187,37 @@ public class NettyConfig {
             nettyConfig.requestTimeout = timeout;
             return this;
         }
+        /**
+         * 连接超时时间
+         * @param timeout
+         * @return
+         */
+        public ClientConfigBuilder connectTimeout(int timeout){
+            nettyConfig.connectTimeout = timeout;
+            return this;
+        }
+        /**
+         * 发送心跳的间隔
+         * @param interval
+         * @return
+         */
+        public ClientConfigBuilder heartBeatSendInterval(int interval){
+            nettyConfig.heartBeatInterval = interval;
+            return this;
+        }
 
         @Override
         protected void checkAndSetDefaultValue() {
             if(nettyConfig.requestTimeout <= 0){
-                nettyConfig.requestTimeout = 500;
+                nettyConfig.requestTimeout = DEFAULT_REQUEST_TIMEOUT;
             }
+            if(nettyConfig.heartBeatInterval <= 0){
+                nettyConfig.heartBeatInterval = DEFAULT_HEART_BEAT_SEND_INTERVAL;
+            }
+            if(nettyConfig.connectTimeout <= 0){
+                nettyConfig.connectTimeout = DEFAULT_CONNECT_TIMEOUT;
+            }
+
         }
 
     }
@@ -206,6 +262,26 @@ public class NettyConfig {
         }
 
         /**
+         * 多少次没收到心跳就关闭连接
+         * @param times
+         * @return
+         */
+        public ServerConfigBuilder heartBeatTimes(int times){
+            nettyConfig.heartBeatTimes = times;
+            return this;
+        }
+
+        /**
+         * 检测心跳的间隔
+         * @param interval
+         * @return
+         */
+        public ServerConfigBuilder heartBeatInterval(int interval){
+            nettyConfig.heartBeatInterval = interval;
+            return this;
+        }
+
+        /**
          * 指定序列化器
          * @param serializer
          * @return
@@ -236,7 +312,12 @@ public class NettyConfig {
 
         @Override
         protected void checkAndSetDefaultValue() {
-
+            if(nettyConfig.heartBeatTimes <= 0){
+                nettyConfig.heartBeatTimes = DEFAULT_HEART_BEAT_TIMES;
+            }
+            if(nettyConfig.heartBeatInterval <= 0){
+                nettyConfig.heartBeatInterval = DEFAULT_HEART_BEAT_INTERVAL;
+            }
         }
 
     }
@@ -267,5 +348,17 @@ public class NettyConfig {
 
     public int getRequestTimeout() {
         return requestTimeout;
+    }
+
+    public int getHeartBeatTimes() {
+        return heartBeatTimes;
+    }
+
+    public int getHeartBeatInterval() {
+        return heartBeatInterval;
+    }
+
+    public int getConnectTimeout() {
+        return connectTimeout;
     }
 }

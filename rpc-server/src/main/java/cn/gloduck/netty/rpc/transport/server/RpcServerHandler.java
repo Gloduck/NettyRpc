@@ -32,12 +32,12 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx)  {
         logger.info("RPC服务端创建了一个新的连接");
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RpcRequest msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, RpcRequest msg) {
         logger.info("收到RPC请求，请求ID为 : {} , 请求服务名为 : {}", msg.getRequestId(), msg.getServiceName());
         executor.submit(() -> {
             logger.info("开始执行RPC请求 : {}", msg.getRequestId());
@@ -56,7 +56,7 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
                         if(future.isDone()){
                             Throwable cause = future.cause();
                             if(cause != null){
-                                logger.error("返回RPC数据出现错误", cause);
+                                logger.error("返回RPC数据出现错误");
                                 // 返回数据出现错误，尝试发送一条发送失败的消息
                                 ctx.writeAndFlush(RpcResponse.sendFailed(msg.getRequestId(),cause.getMessage()));
                             }
@@ -75,7 +75,7 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
         BeanAndMethod beanAndMethod = serviceBeanMapping.get(serviceName);
         if (beanAndMethod == null) {
             // 如果没有找到对应的service
-            String msg = String.format("当前RPC服务端没有对饮的服务 %s", serviceName);
+            String msg = String.format("当前RPC服务端没有对应的服务 %s", serviceName);
             return RpcResponse.serverFailed(request.getRequestId(), msg);
         }
         RpcResponse response;
@@ -87,6 +87,11 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
             response = RpcResponse.serverFailed(request.getRequestId(), e.getMessage());
         }
         return response;
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx)  {
+
     }
 
     @Override

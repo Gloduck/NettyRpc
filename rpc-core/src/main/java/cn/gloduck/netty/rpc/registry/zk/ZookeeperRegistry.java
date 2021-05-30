@@ -97,7 +97,27 @@ public class ZookeeperRegistry extends Registry {
             return true;
         }
         client.start();
+        try {
+            addListener(NetUtil.buildPath(registryConfig.getNamespace()), (client1, event) -> {
+                // 添加监听器，监听zookeeper的节点变化
+                switch (event.getType()){
+                    case CONNECTION_RECONNECTED: // zookeeper重连后
+                        this.loseConnectionMode = false;
+                        logger.warn("zookeeper重连");
+                        break;
+                    case CONNECTION_SUSPENDED: // zookeeper挂了后
+                        this.loseConnectionMode = true;
+                        logger.warn("zookeeper失去连接");
+                        break;
+                    default:
+                        break;
+                }
+            });
+        } catch (Exception e) {
+            logger.error("添加zookeeper监听器失败，可能无法感知zookeeper的短线");
+        }
         return client.getState() == CuratorFrameworkState.STARTED;
+
     }
 
     /**
@@ -113,7 +133,7 @@ public class ZookeeperRegistry extends Registry {
                 .connectionTimeoutMs(registryConfig.getConnectionTimeout())
                 .sessionTimeoutMs(registryConfig.getTimeout())
                 .connectString(registryConfig.getAddress())
-                .retryPolicy(new ExponentialBackoffRetry(1000, 10))
+                .retryPolicy(new ExponentialBackoffRetry(1000, registryConfig.getRetryIfLoseConnection()))
                 .build();
     }
 
@@ -231,7 +251,7 @@ public class ZookeeperRegistry extends Registry {
                         client.delete()
                                 .forPath(getPath(serviceInfo.serviceName, serviceInfo.host, serviceInfo.port));
                     } catch (KeeperException.NoNodeException e) {
-                        logger.warn("No instance for service : {}", serviceInfo.serviceName);
+                        logger.warn("当前实例在注册中心上不存在 : {}", serviceInfo.serviceName);
                     }
                 }
             } catch (Exception e) {
@@ -249,6 +269,7 @@ public class ZookeeperRegistry extends Registry {
     @Override
     public ServiceInstance discover(String serviceName) {
         if (loseConnectionMode) {
+            logger.warn("与注册中心失去连接，从缓存中获取");
             // 与注册中心失去连接，直接获取
             return serviceCache.getOrDefault(serviceName, new ServiceInstance(serviceName, Collections.emptyList()));
         }
@@ -276,7 +297,7 @@ public class ZookeeperRegistry extends Registry {
      * @return
      */
     protected List<Instance> doDiscover(String serviceName) {
-        logger.info("Get service : {} instance from zookeeper", serviceName);
+        logger.info("从zookeeper中获取服务 {} 的实例", serviceName);
         List<Instance> res = new CopyOnWriteArrayList<>();
         try {
             try {
@@ -285,6 +306,9 @@ public class ZookeeperRegistry extends Registry {
                 addListener(path, (client1, event) -> {
                     logger.debug("收到zookeeper事件，{}", event.getType());
                     ChildData data = event.getData();
+                    if(data == null){
+                        return;
+                    }
                     String dataPath = data.getPath();
                     if(dataPath == null){
                         return;
@@ -324,7 +348,7 @@ public class ZookeeperRegistry extends Registry {
                             data = client.getData()
                                     .forPath(dataPath);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            logger.warn("获取实例：{} 的权重失败", dataPath);
                         }
                         if (data != null) {
                             Instance instance = new Instance(address, serviceName, NumberUtil.byteArrayToInt(data));
@@ -335,7 +359,7 @@ public class ZookeeperRegistry extends Registry {
                     }).collect(Collectors.toList());
                 }
             } catch (KeeperException.NoNodeException e) {
-                logger.warn("No instance for service : {}", serviceName);
+                logger.warn("当前服务没有实例 : {}", serviceName);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -400,10 +424,7 @@ public class ZookeeperRegistry extends Registry {
             if (serviceInstance != null) {
                 // 多加一次判断
                 List<Instance> hosts = serviceInstance.getHosts();
-                System.out.println(hosts.getClass().getTypeName());
-                System.out.println(hosts);
                 instance = new Instance(address, serviceName, weight);
-                System.out.println(instance);
                 hosts.add(instance);
                 flag = true;
             }

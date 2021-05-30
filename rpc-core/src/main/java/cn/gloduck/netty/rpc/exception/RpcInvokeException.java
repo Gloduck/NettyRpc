@@ -5,7 +5,6 @@ package cn.gloduck.netty.rpc.exception;
  */
 public class RpcInvokeException extends RuntimeException {
 
-    private String serviceName;
 
 
     public RpcInvokeException() {
@@ -16,13 +15,15 @@ public class RpcInvokeException extends RuntimeException {
         super(message);
     }
 
-    public RpcInvokeException(String message, String serviceName) {
-        super(message);
-        this.serviceName = serviceName;
+    public RpcInvokeException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public RpcInvokeException(String message, String serviceName, Throwable cause) {
-        super(message, cause);
-        this.serviceName = serviceName;
+    public RpcInvokeException(Throwable cause) {
+        super(cause);
+    }
+
+    public RpcInvokeException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

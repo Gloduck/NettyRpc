@@ -13,6 +13,11 @@ public class RegistryConfig {
      */
     private static final int CONNECTION_TIMEOUT = 5000;
 
+    /**
+     * 默认重试次数
+     */
+    private static final int DEFAULT_RETRY_TIMES = 10;
+
 /*
     public static final long REGISTRY_HEARTBEAT_PERIOD = ;
     public static final long REGISTRY_RECONNECT_PERIOD;
@@ -34,6 +39,8 @@ public class RegistryConfig {
      * 连接超时时间
      */
     private int connectionTimeout = CONNECTION_TIMEOUT;
+
+    private int retryIfLoseConnection = DEFAULT_RETRY_TIMES;
     /**
      * 地址列表
      */
@@ -75,6 +82,11 @@ public class RegistryConfig {
 
         public Builder connectionTimeout(int connectionTimeout) {
             config.connectionTimeout = connectionTimeout;
+            return this;
+        }
+
+        public Builder retryTimes(int nTimes){
+            config.retryIfLoseConnection = nTimes;
             return this;
         }
 
@@ -135,6 +147,9 @@ public class RegistryConfig {
         return isEphemeralNode;
     }
 
+    public int getRetryIfLoseConnection() {
+        return retryIfLoseConnection;
+    }
 
     @Override
     public String toString() {

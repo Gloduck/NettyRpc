@@ -2,10 +2,10 @@ package cn.gloduck.netty.rpc.transport.client;
 
 
 import cn.gloduck.netty.rpc.codec.RpcRequest;
-import cn.gloduck.netty.rpc.codec.RpcResponse;
+import cn.gloduck.netty.rpc.exception.RpcClientInvokeException;
 import cn.gloduck.netty.rpc.exception.RpcException;
 import cn.gloduck.netty.rpc.exception.RpcInvokeException;
-import cn.gloduck.netty.rpc.transport.sync.ResponseFuture;
+import cn.gloduck.netty.rpc.exception.RpcSendException;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
@@ -42,7 +42,7 @@ public class Transporter {
 
     protected void checkConnection(){
         if(!isAvailable()){
-            throw new RpcInvokeException("channel is not available");
+            throw new RpcClientInvokeException("当前连接不可用");
         }
     }
     public Object syncSend(RpcRequest request){
@@ -83,12 +83,13 @@ public class Transporter {
         ChannelFuture write = channel.write(request);
         write.addListener(future -> {
             if(future.isDone()){
-                if(future.cause() != null){
+                Throwable cause = future.cause();
+                if(cause != null){
                     // 发送请求出现错误
-                    logger.error("发送RPC请求时候出现错误", future.cause());
-                }
-                if(future.isCancelled()){
-                    logger.warn("RPC请求被取消");
+                    logger.error("发送RPC请求时候出现错误", cause);
+                    // 移除请求
+                    responseHandler.removeRequest(request.getRequestId());
+                    throw new RpcSendException(cause.getMessage(), cause.getCause());
                 }
             }
 

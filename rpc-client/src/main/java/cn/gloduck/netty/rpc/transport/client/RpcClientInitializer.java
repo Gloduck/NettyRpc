@@ -43,7 +43,7 @@ public class RpcClientInitializer extends ChannelInitializer<SocketChannel> {
         serializer = nettyConfig.getNewSerializer();
         if (serializer == null) {
             // 反射创建序列化器失败，使用默认的JDK序列化器
-            logger.warn("Can't create serializer instance , so we use default serializer");
+            logger.warn("创建序列化器失败，使用默认的JDK序列化器");
             serializer = new JdKSerializer();
         }
         ChannelPipeline pipeline = ch.pipeline();

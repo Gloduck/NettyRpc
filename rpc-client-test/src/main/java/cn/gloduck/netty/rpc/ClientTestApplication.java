@@ -6,6 +6,8 @@ import cn.gloduck.netty.rpc.registry.RegistryConfig;
 import cn.gloduck.netty.rpc.registry.zk.ZookeeperRegistry;
 import cn.gloduck.netty.rpc.serializer.jdk.JdKSerializer;
 import cn.gloduck.netty.rpc.serializer.json.FastJsonSerializer;
+import cn.gloduck.netty.rpc.serializer.kryo.KryoSerializer;
+import cn.gloduck.netty.rpc.serializer.protostuff.ProtostuffSerializer;
 import cn.gloduck.netty.rpc.service.TestService;
 import cn.gloduck.netty.rpc.transport.NettyConfig;
 import cn.gloduck.netty.rpc.transport.client.ConnectionManager;
@@ -75,7 +77,7 @@ public class ClientTestApplication {
     public NettyClient nettyClient(){
         NettyConfig config = NettyConfig.clientBuilder()
                 .port(8027)
-                .serializer(FastJsonSerializer.class)
+                .serializer(KryoSerializer.class)
                 .requestTimeout(5000)
                 .build();
         NettyClient nettyClient = new NettyClient(config);

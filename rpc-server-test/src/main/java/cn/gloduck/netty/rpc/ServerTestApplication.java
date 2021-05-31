@@ -5,6 +5,9 @@ import cn.gloduck.netty.rpc.registry.RegistryConfig;
 import cn.gloduck.netty.rpc.registry.zk.ZookeeperRegistry;
 import cn.gloduck.netty.rpc.serializer.jdk.JdKSerializer;
 import cn.gloduck.netty.rpc.serializer.json.FastJsonSerializer;
+import cn.gloduck.netty.rpc.serializer.kryo.KryoSerializer;
+import cn.gloduck.netty.rpc.serializer.protostuff.ProtostuffSerializer;
+import cn.gloduck.netty.rpc.thread.NamedThreadFactory;
 import cn.gloduck.netty.rpc.transport.NettyConfig;
 import cn.gloduck.netty.rpc.transport.server.NettyServer;
 import cn.gloduck.netty.rpc.utils.NetUtil;
@@ -38,6 +41,7 @@ public class ServerTestApplication {
                 .serializer(FastJsonSerializer.class)
                 .heartBeatTimes(3)
                 .heartBeatInterval(5)
+                .serializer(KryoSerializer.class)
                 .build();
         NettyServer nettyServer = new NettyServer(config);
         return nettyServer;

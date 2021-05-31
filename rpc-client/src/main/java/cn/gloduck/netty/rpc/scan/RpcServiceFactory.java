@@ -6,7 +6,8 @@ import org.springframework.beans.factory.FactoryBean;
 import java.lang.reflect.Proxy;
 
 /**
- * 自定义的FactoryBean，使用工厂模式为带有RpcClient的类创建实现类。
+ * 自定义的FactoryBean，使用工厂模式为带有RpcClient的类创建代理实现类。
+ * @author Gloduck
  * @param <T>
  */
 public class RpcServiceFactory<T> implements FactoryBean<T> {
@@ -17,8 +18,9 @@ public class RpcServiceFactory<T> implements FactoryBean<T> {
     }
 
 
+    @SuppressWarnings("unchecked")
     @Override
-    public T getObject() throws Exception {
+    public T getObject() {
         return (T)Proxy.newProxyInstance(interfaceType.getClassLoader(), new Class<?>[]{interfaceType}, new RpcProxy());
     }
 

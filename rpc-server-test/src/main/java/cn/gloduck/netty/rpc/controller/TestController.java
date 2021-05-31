@@ -5,7 +5,6 @@ import cn.gloduck.netty.rpc.ref.server.BeanAndMethod;
 import cn.gloduck.netty.rpc.ref.server.ServiceInfo;
 import cn.gloduck.netty.rpc.registry.Registry;
 import cn.gloduck.netty.rpc.transport.server.NettyServer;
-import cn.hutool.json.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

@@ -29,8 +29,12 @@ public class RpcClientBootstrap  implements ApplicationListener<WebServerInitial
     }
 
     @Override
-    public void destroy() throws Exception {
-
+    public void destroy() {
+        ConnectionManager.instance().removeAllTransporter();
+        logger.info("关闭Netty服务器");
+        client.stop();
+        logger.info("关闭注册中心");
+        registry.stop();
     }
 
 

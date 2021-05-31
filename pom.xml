@@ -3,7 +3,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>cn.gloduck</groupId>
     <artifactId>NettyRpc</artifactId>
     <packaging>pom</packaging>
@@ -11,9 +10,7 @@
     <modules>
         <module>rpc-core</module>
         <module>rpc-server</module>
-        <module>rpc-server-test</module>
         <module>rpc-client</module>
-        <module>rpc-client-test</module>
     </modules>
 
     <properties>
@@ -24,6 +21,8 @@
         <slf4j.version>1.7.30</slf4j.version>
         <spring.version>2.3.4.RELEASE</spring.version>
         <fastjson.version>1.2.75</fastjson.version>
+        <protostuff.version>1.0.8</protostuff.version>
+        <kryo.version>4.0.2</kryo.version>
     </properties>
 
 

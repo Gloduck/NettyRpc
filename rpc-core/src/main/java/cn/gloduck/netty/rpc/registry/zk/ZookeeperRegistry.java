@@ -9,7 +9,6 @@ import cn.gloduck.netty.rpc.registry.RegistryConfig;
 import cn.gloduck.netty.rpc.utils.CollectionUtil;
 import cn.gloduck.netty.rpc.utils.NetUtil;
 import cn.gloduck.netty.rpc.utils.NumberUtil;
-import cn.hutool.core.thread.NamedThreadFactory;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
@@ -23,7 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**

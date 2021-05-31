@@ -17,12 +17,10 @@ import java.util.Set;
 /**
  * https://blog.csdn.net/lichuangcsdn/article/details/89694363
  * 此处可以扫描带有RpcClient注解的类，然后通过工厂模式创建一个代理，并且注册到Bean容器中。
+ * @author Gloduck
  */
 @Component
 public class RpcProxyBeanDefinitionRegistryPostProcessor implements  BeanDefinitionRegistryPostProcessor {
-    private static final Logger logger = LoggerFactory.getLogger(RpcProxyBeanDefinitionRegistryPostProcessor.class);
-
-
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
     }

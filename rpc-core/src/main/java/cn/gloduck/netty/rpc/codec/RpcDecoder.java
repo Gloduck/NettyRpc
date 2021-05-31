@@ -2,7 +2,6 @@ package cn.gloduck.netty.rpc.codec;
 
 import cn.gloduck.netty.rpc.constant.RpcConstant;
 import cn.gloduck.netty.rpc.enums.MessageType;
-import cn.gloduck.netty.rpc.enums.Serializers;
 import cn.gloduck.netty.rpc.exception.SerializationException;
 import cn.gloduck.netty.rpc.serializer.RpcSerializer;
 import io.netty.buffer.ByteBuf;
@@ -14,6 +13,10 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 解码器
+ * @author Gloduck
+ */
 public class RpcDecoder extends ByteToMessageDecoder {
     /**
      * 基本大小，必须大于这个大小才接收。大小为：魔数 + 序列化类型 + 消息类型 + 长度（int 4个字节）

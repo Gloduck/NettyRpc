@@ -8,9 +8,7 @@ import cn.gloduck.netty.rpc.utils.CollectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -92,9 +90,28 @@ public class ConnectionManager {
     }
 
 
+    /**
+     * 移除连接
+     * @param address
+     */
     public void removeTransporter(String address) {
         Transporter transporter = this.transporterMapping.remove(address);
         transporter.destroy();
+    }
+
+    /**
+     * 移除所有连接
+     */
+    public void removeAllTransporter(){
+        Set<Map.Entry<String, Transporter>> entries =
+                this.transporterMapping.entrySet();
+        Iterator<Map.Entry<String, Transporter>> iterator = entries.iterator();
+        while (iterator.hasNext()){
+            Map.Entry<String, Transporter> next = iterator.next();
+            Transporter value = next.getValue();
+            value.destroy();
+            iterator.remove();
+        }
     }
 
 

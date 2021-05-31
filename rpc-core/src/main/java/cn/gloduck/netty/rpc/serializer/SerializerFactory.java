@@ -1,15 +1,15 @@
 package cn.gloduck.netty.rpc.serializer;
 
-import io.netty.channel.ChannelException;
 import io.netty.util.internal.ObjectUtil;
 
 import java.lang.reflect.Constructor;
 
 /**
  * 序列化器工厂
+ * @author Gloduck
  */
 public class SerializerFactory<T extends RpcSerializer> {
-    private Constructor<? extends T> constructor;
+    private final Constructor<? extends T> constructor;
 
     public SerializerFactory(Class<? extends T> serializerClass) {
         ObjectUtil.checkNotNull(serializerClass, "serializerClass");

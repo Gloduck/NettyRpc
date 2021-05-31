@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 
 /**
- * 解析器
+ * 编码器
  * 协议格式：magic（协议魔数），序列化器，消息类型，数据长度，数据
  * @author Gloduck
  */
@@ -40,6 +40,5 @@ public class RpcEncoder extends MessageToByteEncoder<RpcMessage> {
         out.writeInt(data.length);
         // 写数据
         out.writeBytes(data);
-
     }
 }

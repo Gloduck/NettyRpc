@@ -9,6 +9,8 @@ A rpc project based on netty,zookeeper and springboot.
 + 做一个Starter。
 + 优化`RpcProxyBeanDefinitionRegistryPostProcessor`，从指定的包下扫描，而非所有的包下扫描。
 + 添加更多的序列化器。
++ Zookeeper掉线重连可能有点bug
+
 
 # Usage
 

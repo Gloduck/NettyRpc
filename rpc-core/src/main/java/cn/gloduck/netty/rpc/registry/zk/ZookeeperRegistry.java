@@ -18,6 +18,7 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +101,7 @@ public class ZookeeperRegistry extends Registry {
         try {
             addListener(NetUtil.buildPath(registryConfig.getNamespace()), (client1, event) -> {
                 // 添加监听器，监听zookeeper的节点变化
-                switch (event.getType()){
+                switch (event.getType()) {
                     case CONNECTION_RECONNECTED: // zookeeper重连后
                         this.loseConnectionMode = false;
                         logger.warn("zookeeper重连");
@@ -163,15 +164,30 @@ public class ZookeeperRegistry extends Registry {
     public void registrySingle(String host, int port, String serviceName, int weight) {
         boolean flag = false;
         try {
+            CuratorFramework zkClient = getAndCheckZkClient();
             try {
-                CuratorFramework zkClient = getAndCheckZkClient();
+                String path = getPath(serviceName, host, port);
+                // 获取节点状态
+                Stat stat = zkClient.checkExists().forPath(path);
+                if (stat != null) {
+                    // 如果节点状态不为null，则证明当前节点在zookeeper中存在
+                    long ephemeralOwner = stat.getEphemeralOwner();
+                    if (ephemeralOwner != 0) {
+                        // 如果不为0，则代表当前节点为临时节点。由于路径存在，则大概率是因为当前服务非正常关闭，但是由于还没过timeout，zookeeper认为是服务器断线了，还没删除节点信息
+                        // 则手动删除节点信息，然后执行注册。
+                        zkClient.delete().deletingChildrenIfNeeded().forPath(path);
+                        logger.info("服务器非正常退出，从zookeeper中删除临时节点：{}",path);
+                    }
+                }
+                // 节点不存在，或节点存在，但是是永久节点。则尝试直接添加节点。
                 zkClient.create().creatingParentContainersIfNeeded()
                         .withMode(registryConfig.isEphemeralNode() ? CreateMode.EPHEMERAL : CreateMode.PERSISTENT)
-                        .forPath(getPath(serviceName, host, port), NumberUtil.intToByteArray(weight));
+                        .forPath(path, NumberUtil.intToByteArray(weight));
                 flag = true;
 
             } catch (KeeperException.NodeExistsException nodeExistsException) {
-                logger.warn("注册服务:{}到注册中心失败,当前节点已经存在", serviceName);
+                // 此时异常，则证明在zookeeper中注册了一个持久节点，则发出提示。
+                logger.warn("注册服务:{}到注册中心失败,当前节点已经存在，尝试判断节点状态", serviceName);
             }
         } catch (Exception e) {
             throw new RpcException(e.getMessage(), e.getCause());
@@ -288,7 +304,6 @@ public class ZookeeperRegistry extends Registry {
     }
 
 
-
     /**
      * 从zookeeper中获取数据
      * 注：待更改
@@ -306,11 +321,11 @@ public class ZookeeperRegistry extends Registry {
                 addListener(path, (client1, event) -> {
                     logger.debug("收到zookeeper事件，{}", event.getType());
                     ChildData data = event.getData();
-                    if(data == null){
+                    if (data == null) {
                         return;
                     }
                     String dataPath = data.getPath();
-                    if(dataPath == null){
+                    if (dataPath == null) {
                         return;
                     }
                     String address = getAddressFromChildrenPath(dataPath);

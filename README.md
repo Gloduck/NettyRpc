@@ -9,6 +9,7 @@ A rpc project based on netty,zookeeper and springboot.
 + 做一个Starter。
 + 优化`RpcProxyBeanDefinitionRegistryPostProcessor`，从指定的包下扫描，而非所有的包下扫描。
 + 添加更多的序列化器。
++ 服务提供者非正常关闭然后立即重启，对临时节点的处理优点问题。
 
 
 # Usage

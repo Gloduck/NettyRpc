@@ -10,6 +10,7 @@ A rpc project based on netty,zookeeper and springboot.
 + 优化`RpcProxyBeanDefinitionRegistryPostProcessor`，从指定的包下扫描，而非所有的包下扫描。
 + 添加更多的序列化器。
 + 服务提供者非正常关闭然后立即重启，对临时节点的处理优点问题。
++ 只根据消息头和长度判断消息有问题，还需要加一个字符表示结尾。否则如果传输图片之类的会报错，如果图片头部和魔数一样，可能会导致Netty解析消息出错。
 
 
 # Usage

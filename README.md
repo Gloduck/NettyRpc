@@ -1,6 +1,9 @@
 # NettyRpc
 A rpc project based on netty,zookeeper and springboot.
 
+**更多详情请参考个人博客 ：https://mxecy.cn/post/spring-netty-rpc/**
+
+
 一个基于netty,zookeeper,springboot的练手rpc项目。由于是练手项目，所以可能会有一些问题，欢迎指出。
 [文档参考](https://github.com/Gloduck/NettyRpc/blob/main/Rpc/%E6%96%87%E6%A1%A3.md)
 
